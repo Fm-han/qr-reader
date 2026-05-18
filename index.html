@@ -3,213 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浜岀淮鐮佽瘑鍒櫒</title>
+    <title>二维码识别器</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafafa; min-height: 100vh; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
-        h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; color: #333; text-align: center; }
-        .title { font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; color: #333; }
-        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
-        .upload-area { border: 2px dashed #ddd; border-radius: 8px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .upload-area:hover { border-color: #007bff; background: #f8f9ff; }
-        .upload-area.dragover { border-color: #007bff; background: #e7f3ff; }
-        .upload-icon { font-size: 3rem; margin-bottom: 16px; }
-        .upload-text { color: #666; margin-bottom: 8px; }
-        .upload-hint { color: #999; font-size: 0.85rem; }
-        input[type="file"] { display: none; }
-        .preview { margin-top: 16px; text-align: center; }
-        .preview img { max-width: 100%; max-height: 300px; border-radius: 4px; }
-        .result { background: #f0f7ff; border: 1px solid #007bff; border-radius: 4px; padding: 16px; margin-top: 16px; }
-        .result-label { color: #666; font-size: 0.9rem; margin-bottom: 8px; }
-        .result-value { color: #007bff; font-size: 1.1rem; word-break: break-all; font-family: monospace; }
-        .result-actions { margin-top: 12px; display: flex; gap: 10px; }
-        button { background: #007bff; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        button.copy-btn { background: #28a745; }
-        button.copy-btn:hover { background: #218838; }
-        button.open-btn { background: #6f42c1; }
-        button.open-btn:hover { background: #5a32a3; }
-        button.clear-btn { background: #6c757d; }
-        button.clear-btn:hover { background: #5a6268; }
-        .error { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 12px; margin-top: 16px; color: #721c24; }
-        .loading { text-align: center; padding: 20px; color: #666; }
-        .loading-spinner { display: inline-block; width: 30px; height: 30px; border: 3px solid #e0e0e0; border-top-color: #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .supported-formats { margin-top: 16px; font-size: 0.85rem; color: #666; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafafa; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; color: #333; }
+        .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin-bottom: 16px; }
+        .upload-area { border: 2px dashed #ddd; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: border-color 0.3s; }
+        .upload-area:hover { border-color: #007bff; }
+        .upload-area input { display: none; }
+        .upload-icon { font-size: 3rem; margin-bottom: 12px; }
+        .btn { padding: 8px 20px; border-radius: 4px; cursor: pointer; border: none; font-size: 14px; margin-right: 8px; }
+        .btn-blue { background: #007bff; color: #fff; }
+        .btn-green { background: #28a745; color: #fff; }
+        .result { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-top: 16px; }
+        .result-label { font-weight: 500; color: #666; margin-bottom: 8px; }
+        .result-value { font-family: monospace; word-break: break-all; padding: 12px; background: #fff; border-radius: 4px; border: 1px solid #ddd; }
+        .preview { max-width: 100%; max-height: 300px; margin: 16px auto; display: block; border: 1px solid #ddd; border-radius: 4px; }
+        .error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-top: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>浜岀淮鐮佽瘑鍒櫒</h1>
+        <h1>二维码识别器</h1>
         <div class="card">
-            <div class="title">涓婁紶浜岀淮鐮佸浘鐗?/div>
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">馃摲</div>
-                <div class="upload-text">鐐瑰嚮鎴栨嫋鎷戒笂浼犱簩缁寸爜鍥剧墖</div>
-                <div class="upload-hint">鏀寔 PNG銆丣PG銆丟IF 鏍煎紡</div>
-                <input type="file" id="fileInput" accept="image/*">
-            </div>
-            
-            <div id="preview" class="preview" style="display:none;">
-                <img id="previewImg" src="" alt="棰勮">
-            </div>
-            
-            <div id="loading" class="loading" style="display:none;">
-                <div class="loading-spinner"></div>
-                <div>姝ｅ湪璇嗗埆浜岀淮鐮?..</div>
-            </div>
-            
-            <div id="result" class="result" style="display:none;">
-                <div class="result-label">璇嗗埆缁撴灉</div>
-                <div id="resultValue" class="result-value"></div>
-                <div class="result-actions">
-                    <button class="copy-btn" onclick="copyResult()">澶嶅埗</button>
-                    <button class="open-btn" onclick="openLink()">鎵撳紑閾炬帴</button>
-                    <button class="clear-btn" onclick="clearAll()">娓呴櫎</button>
-                </div>
-            </div>
-            
-            <div id="error" class="error" style="display:none;"></div>
-            
-            <div class="supported-formats">
-                鏀寔璇嗗埆: URL銆佹枃鏈€佽仈绯绘柟寮?WiFi)銆佸悕鐗囥€侀偖绠便€佺數璇濈瓑
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📷</div>
+                <div>点击上传二维码图片</div>
+                <div style="font-size:12px;color:#666;margin-top:8px;">支持 PNG, JPG, GIF, BMP 格式</div>
+                <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])">
             </div>
         </div>
-        
-        <div class="card">
-            <div class="title">浣跨敤璇存槑</div>
-            <p style="color:#666; font-size:0.9rem; line-height:1.6;">
-                1. 鐐瑰嚮涓婁紶鍖哄煙閫夋嫨浜岀淮鐮佸浘鐗?br>
-                2. 鎴栫洿鎺ユ嫋鎷藉浘鐗囧埌涓婁紶鍖哄煙<br>
-                3. 绯荤粺灏嗚嚜鍔ㄨ瘑鍒簩缁寸爜鍐呭<br>
-                4. 璇嗗埆鍚庡彲澶嶅埗缁撴灉鎴栫洿鎺ユ墦寮€閾炬帴
-            </p>
+        <div class="card" id="resultCard" style="display:none;">
+            <div class="result-label">识别结果:</div>
+            <div class="result-value" id="resultText"></div>
+            <div style="margin-top:12px;">
+                <button class="btn btn-green" onclick="copyResult()">复制结果</button>
+                <button class="btn btn-blue" onclick="openLink()" id="openBtn" style="display:none;">打开链接</button>
+            </div>
+        </div>
+        <div class="card" id="imageCard" style="display:none;">
+            <img id="preview" class="preview">
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const preview = document.getElementById('preview');
-        const previewImg = document.getElementById('previewImg');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
-        const resultValue = document.getElementById('resultValue');
-        const error = document.getElementById('error');
-        
-        uploadArea.addEventListener('click', () => fileInput.click());
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) processFile(file);
-        });
-        
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) processFile(file);
-        });
-        
-        function processFile(file) {
-            if (!file.type.startsWith('image/')) {
-                showError('璇蜂笂浼犲浘鐗囨枃浠?);
-                return;
-            }
-            
-            hideAll();
-            preview.style.display = 'block';
-            previewImg.src = URL.createObjectURL(file);
+        function handleFile(file) {
+            if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = function(e) {
                 const img = new Image();
-                img.onload = () => {
-                    loading.style.display = 'block';
-                    setTimeout(() => decodeQRCode(img), 100);
+                img.onload = function() {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imageCard').style.display = 'block';
+                    decodeQR(e.target.result);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
         
-        function decodeQRCode(img) {
+        function decodeQR(dataUrl) {
+            const img = document.getElementById('preview');
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0, img.width, img.height);
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
             
-            try {
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('resultText').textContent = code.data;
                 
-                loading.style.display = 'none';
-                
-                if (code) {
-                    resultValue.textContent = code.data;
-                    result.style.display = 'block';
-                } else {
-                    showError('鏈兘璇嗗埆鍒版湁鏁堢殑浜岀淮鐮侊紝璇风‘淇濆浘鐗囨竻鏅颁笖浜岀淮鐮佸畬鏁?);
-                }
-            } catch (e) {
-                loading.style.display = 'none';
-                showError('璇嗗埆杩囩▼涓嚭閿? ' + e.message);
+                const isUrl = /^https?:\/\//i.test(code.data);
+                document.getElementById('openBtn').style.display = isUrl ? 'inline-block' : 'none';
+            } else {
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('resultText').innerHTML = '<span style="color:#dc3545;">未能识别出二维码，请确保图片清晰且包含有效的二维码</span>';
+                document.getElementById('openBtn').style.display = 'none';
             }
         }
         
-        function showError(msg) {
-            error.textContent = msg;
-            error.style.display = 'block';
-        }
-        
-        function hideAll() {
-            preview.style.display = 'none';
-            loading.style.display = 'none';
-            result.style.display = 'none';
-            error.style.display = 'none';
-        }
-        
         function copyResult() {
-            navigator.clipboard.writeText(resultValue.textContent).then(() => {
-                alert('宸插鍒跺埌鍓创鏉?');
+            const text = document.getElementById('resultText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                btn.textContent = '已复制!';
+                setTimeout(() => btn.textContent = '复制结果', 1500);
             });
         }
         
         function openLink() {
-            const text = resultValue.textContent;
-            let url = text;
-            
-            if (!text.match(/^https?:\/\//i)) {
-                if (text.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-                    url = 'mailto:' + text;
-                } else if (text.match(/^\+?[\d\s-]{10,}$/)) {
-                    url = 'tel:' + text.replace(/\s/g, '');
-                } else {
-                    url = 'https://' + text;
-                }
+            const text = document.getElementById('resultText').textContent;
+            if (/^https?:\/\//i.test(text)) {
+                window.open(text, '_blank');
             }
-            
-            window.open(url, '_blank');
-        }
-        
-        function clearAll() {
-            hideAll();
-            fileInput.value = '';
-            previewImg.src = '';
         }
     </script>
 </body>
